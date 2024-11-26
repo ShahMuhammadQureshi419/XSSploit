@@ -48,7 +48,7 @@ XSSploit is in its **beta version** and is under active development, with more f
 
 ![image](https://github.com/user-attachments/assets/da76bfaa-4b27-42c8-a07d-d2a97534f6c6)
 
-  **Choose the type of XSS to test:**
+3. **Choose the type of XSS to test:**
 
 - 1: Reflected XSS
 - 2: Stored XSS
@@ -59,10 +59,14 @@ XSSploit is in its **beta version** and is under active development, with more f
 ![image](https://github.com/user-attachments/assets/a0738c0d-114f-4d43-9ed4-e08356fbd606)
 
 
-
-- Follow the results to analyze vulnerabilities:
+4. **Follow the results to analyze vulnerabilities:**
   - For Reflected and Stored XSS: The tool tests and outputs vulnerabilities found.
   - For DOM-based XSS: URLs are generated for manual testing in a browser.
+
+5. **View the findings report**:
+   - After running the tool, findings are saved in a file located in the `documentation` folder.
+   - The file name is formatted as `findings_<timestamp>.txt`.
+   - Open the file to analyze the detected vulnerabilities and generated test URLs.
   
 ---
 ## About
