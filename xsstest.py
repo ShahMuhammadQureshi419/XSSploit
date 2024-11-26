@@ -7,22 +7,16 @@ from datetime import datetime
 
 # Function to create a findings report
 def create_documentation_file():
-    # Create a folder for documentation if it doesn't exist
     if not os.path.exists("documentation"):
         os.makedirs("documentation")
-
-    # Create a unique file name with a timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     file_path = f"documentation/findings_{timestamp}.txt"
-    
     return file_path
 
 # Function to write findings to the report
 def write_to_documentation(file_path, content):
     with open(file_path, "a") as file:
         file.write(content + "\n")
-
-
 
 # Load payloads from a file
 def load_payloads(file_path):
@@ -92,14 +86,9 @@ def test_forms(forms, payloads, xss_type, doc_file):
                     response = requests.get(url, params=form_data, timeout=10)
 
                 if payload in response.text:
-                    if xss_type == "reflected":
-                        finding = f"[+] Reflected XSS Detected! URL: {url}, Payload: {payload}"
-                        print(finding)
-                        write_to_documentation(doc_file, finding)
-                    elif xss_type == "stored":
-                        finding = f"[+] Stored XSS Detected! URL: {url}, Payload: {payload}"
-                        print(finding)
-                        write_to_documentation(doc_file, finding)
+                    finding = f"[+] {xss_type.capitalize()} XSS Detected! URL: {url}, Payload: {payload}"
+                    print(finding)
+                    write_to_documentation(doc_file, finding)
                 else:
                     safe_message = f"[-] Payload safe for URL: {url}, Payload: {payload}"
                     print(safe_message)
@@ -120,6 +109,7 @@ def test_dom_xss(base_url, payloads, doc_file):
 
 # Main function
 def main():
+    print(text2art("XSS Tester"))
     print("Welcome to the XSS Testing Tool!")
     base_url = input("Enter the base URL: ").strip()
     max_depth = int(input("Enter the crawling depth: "))
@@ -148,13 +138,14 @@ def main():
 
     # Run tests based on user choice
     if choice == 1:
-        test_forms(forms, payloads, doc_file)
+        test_forms(forms, payloads, "reflected", doc_file)
     elif choice == 2:
-        test_forms(forms, payloads, doc_file)  # Add specific logic for Stored XSS here
+        test_forms(forms, payloads, "stored", doc_file)
     elif choice == 3:
         test_dom_xss(base_url, payloads, doc_file)
     elif choice == 4:
-        test_forms(forms, payloads, doc_file)
+        test_forms(forms, payloads, "reflected", doc_file)
+        test_forms(forms, payloads, "stored", doc_file)
         test_dom_xss(base_url, payloads, doc_file)
     else:
         print("[-] Invalid choice. Exiting.")
@@ -163,5 +154,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
