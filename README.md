@@ -8,6 +8,8 @@
 
 XSSploit is in its **beta version** and is under active development, with more features planned for future releases.
 
+![image](https://github.com/user-attachments/assets/cd339bbf-affe-4611-9a13-c948f0b915c9)
+
 ---
 
 ## Features
@@ -28,3 +30,41 @@ XSSploit is in its **beta version** and is under active development, with more f
    ```bash
    git clone https://github.com/Binary-Assassin/XSSploit.git
    cd XSSploit
+   pip install -r requirements.txt
+   python xsstest.py
+
+--- 
+
+## Usage
+
+1. **Launch the tool**:
+   ```bash
+   python xssploit.py
+2. **Enter the required inputs when prompted:**
+
+- **Base URL:** The starting URL for web crawling.
+- **Crawling Depth:** Depth for crawling links and forms.
+
+
+![image](https://github.com/user-attachments/assets/da76bfaa-4b27-42c8-a07d-d2a97534f6c6)
+
+  **Choose the type of XSS to test:**
+
+- 1: Reflected XSS
+- 2: Stored XSS
+- 3: DOM-based XSS
+- 4: Test all XSS types
+
+![image](https://github.com/user-attachments/assets/dc0d5f6e-f8e7-474c-844e-8524ac53567f)
+![image](https://github.com/user-attachments/assets/a0738c0d-114f-4d43-9ed4-e08356fbd606)
+
+
+
+- Follow the results to analyze vulnerabilities:
+  - For Reflected and Stored XSS: The tool tests and outputs vulnerabilities found.
+  - For DOM-based XSS: URLs are generated for manual testing in a browser.
+  
+---
+## About
+
+
