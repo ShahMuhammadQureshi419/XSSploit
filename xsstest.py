@@ -3,6 +3,26 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import os
 from art import *
+from datetime import datetime
+
+# Function to create a findings report
+def create_documentation_file():
+    # Create a folder for documentation if it doesn't exist
+    if not os.path.exists("documentation"):
+        os.makedirs("documentation")
+
+    # Create a unique file name with a timestamp
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    file_path = f"documentation/findings_{timestamp}.txt"
+    
+    return file_path
+
+# Function to write findings to the report
+def write_to_documentation(file_path, content):
+    with open(file_path, "a") as file:
+        file.write(content + "\n")
+
+
 
 # Load payloads from a file
 def load_payloads(file_path):
@@ -51,7 +71,7 @@ def web_crawler(base_url, max_depth=2):
     return forms
 
 # Test forms for Reflected and Stored XSS
-def test_forms(forms, payloads, xss_type):
+def test_forms(forms, payloads, xss_type, doc_file):
     print("\n[+] Testing Forms for XSS...")
     for form in forms:
         url = form['action']
@@ -66,32 +86,40 @@ def test_forms(forms, payloads, xss_type):
                     form_data[input_name] = payload
 
             try:
-                if method == 'post':
+                if method.lower() == 'post':
                     response = requests.post(url, data=form_data, timeout=10)
                 else:
                     response = requests.get(url, params=form_data, timeout=10)
 
                 if payload in response.text:
                     if xss_type == "reflected":
-                        print(f"[+] Reflected XSS Detected! URL: {url}, Payload: {payload}")
+                        finding = f"[+] Reflected XSS Detected! URL: {url}, Payload: {payload}"
+                        print(finding)
+                        write_to_documentation(doc_file, finding)
                     elif xss_type == "stored":
-                        print(f"[+] Stored XSS Detected! URL: {url}, Payload: {payload}")
+                        finding = f"[+] Stored XSS Detected! URL: {url}, Payload: {payload}"
+                        print(finding)
+                        write_to_documentation(doc_file, finding)
                 else:
-                    print(f"[-] Payload safe: {payload}")
+                    safe_message = f"[-] Payload safe for URL: {url}, Payload: {payload}"
+                    print(safe_message)
+                    write_to_documentation(doc_file, safe_message)
             except Exception as e:
-                print(f"[-] Error testing form at {url}: {e}")
+                error_message = f"[-] Error testing form at {url}: {e}"
+                print(error_message)
+                write_to_documentation(doc_file, error_message)
 
 # Test DOM-based XSS
-def test_dom_xss(base_url, payloads):
+def test_dom_xss(base_url, payloads, doc_file):
     print("\n[+] Testing for DOM-based XSS...")
     for payload in payloads:
         test_url = f"{base_url}?input={payload}"
-        print(f"[!] Test manually: {test_url}")
-        print("   - Check browser console for execution.")
+        finding = f"[!] Test manually: {test_url}\n   - Check browser console for execution."
+        print(finding)
+        write_to_documentation(doc_file, finding)
 
 # Main function
 def main():
-    print(text2art("XSS Tester"))
     print("Welcome to the XSS Testing Tool!")
     base_url = input("Enter the base URL: ").strip()
     max_depth = int(input("Enter the crawling depth: "))
@@ -106,35 +134,34 @@ def main():
     # Crawl the website
     forms = web_crawler(base_url, max_depth)
 
-    # Choose XSS type
-    print("\nSelect the type of XSS to test:")
+    # Create documentation file
+    doc_file = create_documentation_file()
+    print(f"\n[+] Documentation will be saved in: {doc_file}\n")
+
+    # Choose the type of XSS testing
+    print("Choose the type of XSS to test:")
     print("1. Reflected XSS")
     print("2. Stored XSS")
     print("3. DOM-based XSS")
-    print("4. All")
-    choice = input("Enter your choice (e.g., 1, 2, 3, or 4): ").strip()
+    print("4. Test all XSS types")
+    choice = int(input("Enter your choice (1-4): "))
 
-    # Test based on choice
-    if choice == "1":
-        print("\n[+] Testing for Reflected XSS...")
-        test_forms(forms, payloads, "reflected")
-    elif choice == "2":
-        print("\n[+] Testing for Stored XSS...")
-        test_forms(forms, payloads, "stored")
-    elif choice == "3":
-        print("\n[+] Testing for DOM-based XSS...")
-        test_dom_xss(base_url, payloads)
-    elif choice == "4":
-        print("\n[+] Testing for All XSS Types...")
-        print("[*] Reflected XSS:")
-        test_forms(forms, payloads, "reflected")
-        print("[*] Stored XSS:")
-        test_forms(forms, payloads, "stored")
-        print("[*] DOM-based XSS:")
-        test_dom_xss(base_url, payloads)
+    # Run tests based on user choice
+    if choice == 1:
+        test_forms(forms, payloads, doc_file)
+    elif choice == 2:
+        test_forms(forms, payloads, doc_file)  # Add specific logic for Stored XSS here
+    elif choice == 3:
+        test_dom_xss(base_url, payloads, doc_file)
+    elif choice == 4:
+        test_forms(forms, payloads, doc_file)
+        test_dom_xss(base_url, payloads, doc_file)
     else:
         print("[-] Invalid choice. Exiting.")
 
+    print(f"\n[+] Documentation saved in: {doc_file}")
+
 if __name__ == "__main__":
     main()
+
 
