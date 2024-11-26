@@ -69,6 +69,6 @@ XSSploit is in its **beta version** and is under active development, with more f
    - Open the file to analyze the detected vulnerabilities and generated test URLs.
   
 ---
-## About
+## About the Project
 
 
